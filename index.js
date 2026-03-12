@@ -26,25 +26,43 @@ const turnManager = (() =>{
         }
         return currentTurn;
     }
-    const getCurentTurn = () => currentTurn;
-    return{findTurn, getCurentTurn};
+    const getCurrentTurn = () => currentTurn;
+    return{findTurn, getCurrentTurn};
 })();
 
+const boardManger = (()=>{
 
+
+})();
+
+const gameLogic = (()=>{
+    let gamePad = [ "null", "null", "null",
+                      "null", "null", "null",
+                      "null", "null", "null"]
+    const updateGamePad = (index, content)=>{
+        gamePad[index] = content;
+    }
+
+    const getGamePad = () => gamePad;
+
+    return{updateGamePad, getGamePad};
+})();
 
 const startGame = (() =>{
-    const gamePlay = document.querySelector("#gamePlay")
-    //ideally only call generate Once
+    const gamePlay = document.querySelector("#gamePlay");
     const generateBoard = () =>{
         for(let i=0; i<9; i++){
             const square = document.createElement("div");
             square.classList.add("square");
+            square.id = i;
             gamePlay.append(square);
             square.addEventListener("click", ()=>{
-                square.textContent = turnManager.getCurentTurn();
+                square.textContent = turnManager.getCurrentTurn();
+                gameLogic.updateGamePad(square.id, turnManager.getCurrentTurn());
                 turnManager.findTurn();
+                console.log(gameLogic.getGamePad());
                 
-            })
+            }, {once: true});
             
         }
     }
