@@ -30,38 +30,23 @@ const turnManager = (() =>{
     return{findTurn, getCurrentTurn};
 })();
 
-const boardManger = (()=>{
+const boardManager = (()=>{
     const drawWinLine = ()=>{
         const line = document.querySelector(".winningLine")
         const winCombo = winManager.determineWinner();
         switch(winCombo.join()){
-            case "0,1,2":
-                line.classList.add("top-row");
-                break;
-            case "3,4,5":
-                line.classList.add("middle-row");
-                break;
-            case "6,7,8":
-                line.classList.add("bottom-row");
-                break;
-            case "0,3,6":
-                line.classList.add("left-column");
-                break;
-            case "1,4,7":
-                line.classList.add("middle-column");
-                break;
-            case "2,5,8":
-                line.classList.add("right-column");
-                break;
-            case "0,4,8":
-                line.classList.add("left-diag");
-                break;
-            case "2,4,6":
-                line.classList.add("right-diag");
-                break;
+            case "0,1,2": line.classList.add("top-row"); break;
+            case "3,4,5": line.classList.add("middle-row"); break;
+            case "6,7,8": line.classList.add("bottom-row"); break;
+            case "0,3,6": line.classList.add("left-column"); break;
+            case "1,4,7": line.classList.add("middle-column"); break;
+            case "2,5,8": line.classList.add("right-column"); break;
+            case "0,4,8": line.classList.add("left-diag"); break;
+            case "2,4,6": line.classList.add("right-diag"); break;
                 
         }
     }
+    return{drawWinLine}
 })();
 
 const gameLogic = (()=>{
@@ -121,7 +106,8 @@ const startGame = (() =>{
                 gameLogic.updateRounds();
                 if(gameLogic.getRounds() >= 5){
                     if(winManager.determineWinner()){
-                        console.log(gameLogic.getGamePad());
+                        //console.log(gameLogic.getGamePad());
+                        boardManager.drawWinLine();
                     }
                 }
                 turnManager.findTurn();
