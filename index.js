@@ -1,28 +1,68 @@
+const startGame = (() =>{
+    const gamePlay = document.querySelector("#gameGrid");
+    const generateBoard = () =>{
+        for(let i=0; i<9; i++){
+            const square = document.createElement("div");
+            const iconHolder = document.createElement("img");
+            iconHolder.classList.add(".icon");
+            square.append(iconHolder);
+            square.classList.add("square");
+            square.id = i;
+            gamePlay.append(square);
+            square.addEventListener("click", ()=>{
+                iconHolder.src = turnManager.getCurrentTurn().getIcon();
+                gameLogic.updateGamePad(square.id, turnManager.getCurrentTurn().getIcon());
+                gameLogic.updateRounds();
+                if(gameLogic.getRounds() >= 5){
+                    if(winManager.determineWinner()){
+                        //console.log(gameLogic.getGamePad());
+                        boardManager.drawWinLine();
+                    }
+                }
+                turnManager.findTurn();
+                //console.log(gameLogic.getGamePad());
+                
+            }, {once: true});
+            
+        }
+    }
 
-const Player1 = Player("Angela");
-Player1.chooseFruit("🫐");
-const Player2 = Player("Oscar");
-Player2.chooseFruit("🍒");
-
+    return{generateBoard};
+})();
 
 function Player(name){
-    let fruit = null;
-    const chooseFruit = (userChoice) =>{
-        fruit = userChoice;
+    let icon = null;
+    const chooseIcon = (userChoice) =>{
+        icon = userChoice;
     }
-    const getFruit = () => fruit;
+    const getIcon = () => icon;
 
-    return{name, chooseFruit, getFruit};
+    return{name, chooseIcon, getIcon};
 }
 
+const gamePlayers = (()=>{
+    const Player1 = Player("player1");
+    const Player2 = Player("player2");
+    Player1.chooseIcon("heart.png");
+    Player2.chooseIcon("star.png");
+
+
+    startGame.generateBoard();
+
+    return{Player1, Player2};
+
+})();
+
+
+
 const turnManager = (() =>{
-    let currentTurn = Player1.getFruit();
+    let currentTurn = gamePlayers.Player1;
     const findTurn = () =>{
-        if(currentTurn == Player1.getFruit()){
-            currentTurn = Player2.getFruit()
+        if(currentTurn == gamePlayers.Player1){
+            currentTurn = gamePlayers.Player2;
         }
         else{
-            currentTurn = Player1.getFruit();
+            currentTurn = gamePlayers.Player1;
         }
         return currentTurn;
     }
@@ -82,9 +122,9 @@ const winManager = (()=>{
 
     const determineWinner = () =>{
         let gameBoard = gameLogic.getGamePad();
-        //remember that currentPlayer holds the fruit in play
         let currentPlayer = turnManager.getCurrentTurn();
-        const winner = winningCombo.find(combo => combo.every(i => gameBoard[i] == currentPlayer));
+        console.log(currentPlayer);
+        const winner = winningCombo.find(combo => combo.every(i => gameBoard[i] == currentPlayer.getIcon()));
 
         return winner;
     }
@@ -92,34 +132,6 @@ const winManager = (()=>{
     return{determineWinner};
 })();
 
-const startGame = (() =>{
-    const gamePlay = document.querySelector("#gameGrid");
-    const generateBoard = () =>{
-        for(let i=0; i<9; i++){
-            const square = document.createElement("div");
-            square.classList.add("square");
-            square.id = i;
-            gamePlay.append(square);
-            square.addEventListener("click", ()=>{
-                square.textContent = turnManager.getCurrentTurn();
-                gameLogic.updateGamePad(square.id, turnManager.getCurrentTurn());
-                gameLogic.updateRounds();
-                if(gameLogic.getRounds() >= 5){
-                    if(winManager.determineWinner()){
-                        //console.log(gameLogic.getGamePad());
-                        boardManager.drawWinLine();
-                    }
-                }
-                turnManager.findTurn();
-                //console.log(gameLogic.getGamePad());
-                
-            }, {once: true});
-            
-        }
-    }
 
-    return{generateBoard};
-})();
-startGame.generateBoard();
 
 

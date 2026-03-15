@@ -24,10 +24,17 @@
 }
 .square{
     border-radius: 1rem;
-    font-size: 6rem;
-    text-align: center;
+    font-size: 5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.12);
     cursor: pointer;
+}
+.icon{
+    border: 1px solid green;
+    width: 1rem;
+    height: 1rem;
 }
 
 #header{
@@ -54,6 +61,8 @@
 .right-column{width: 90%; left: 83.3%; transform: translate(-50%, -50%)rotate(90deg);}
 .left-diag{width: 120%; transform: translate(-50%, -50%)rotate(45deg);}
 .right-diag{width: 120%; transform: translate(-50%, -50%)rotate(-45deg);}
+
+
 
 @media (max-width: 1240px){
     #outerContainer{
