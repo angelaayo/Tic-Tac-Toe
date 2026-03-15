@@ -1,4 +1,5 @@
 const startGame = (() =>{
+    const MIN_ROUNDS_FOR_WIN = 5;
     const gamePlay = document.querySelector("#gameGrid");
     const generateBoard = () =>{
         for(let i=0; i<9; i++){
@@ -13,10 +14,12 @@ const startGame = (() =>{
                 iconHolder.src = turnManager.getCurrentTurn().getIcon();
                 gameLogic.updateGamePad(square.id, turnManager.getCurrentTurn().getIcon());
                 gameLogic.updateRounds();
-                if(gameLogic.getRounds() >= 5){
+                if(gameLogic.getRounds() >= MIN_ROUNDS_FOR_WIN){
                     if(winManager.determineWinner()){
                         //console.log(gameLogic.getGamePad());
                         boardManager.drawWinLine();
+                        //add visual pop up
+                        return;
                     }
                 }
                 turnManager.findTurn();
@@ -64,7 +67,6 @@ const turnManager = (() =>{
         else{
             currentTurn = gamePlayers.Player1;
         }
-        return currentTurn;
     }
     const getCurrentTurn = () => currentTurn;
     return{findTurn, getCurrentTurn};
@@ -90,9 +92,9 @@ const boardManager = (()=>{
 })();
 
 const gameLogic = (()=>{
-    let gamePad = [ "null", "null", "null",
-                      "null", "null", "null",
-                      "null", "null", "null"]
+    let gamePad = [ null, null, null,
+                      null, null, null,
+                      null, null, null]
     let rounds = 0;
     const updateRounds = ()=>{ rounds++;}
     const getRounds = ()=> rounds;
