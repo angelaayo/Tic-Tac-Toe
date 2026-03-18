@@ -2,7 +2,7 @@
     border: 1px solid blue;
     margin: 0 auto;
     max-width: 80%;
-    padding: 1rem;
+    padding: 0.5rem;
 
 }
 .secondContainer{
@@ -69,6 +69,7 @@
     display: grid;
     grid-template-rows: auto auto;
     grid-template-columns: 1fr 3fr 1fr;
+    gap: 0.5rem;
 }
 
 .hideDisplay{
@@ -218,7 +219,9 @@ svg{
 .left-diag{width: 120%; transform: translate(-50%, -50%)rotate(45deg);}
 .right-diag{width: 120%; transform: translate(-50%, -50%)rotate(-45deg);}
 
-
+#leftSideBar{
+    border: 1px solid green;
+}
 
 
 @media (max-width: 1240px){
