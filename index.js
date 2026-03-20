@@ -20,10 +20,28 @@ const startGame = (() =>{
                     if(winManager.determineWinner()){
                         //console.log(gameLogic.getGamePad());
                         boardManager.drawWinLine();
-                        popUp.show(turnManager.getCurrentTurn().name);
+                        popUp.show(turnManager.getCurrentTurn().name + "wins the game");
+                        return;
+                    }
+                    if(gameLogic.getRounds == 9){
+                        popUp.show("It's a tie");
                         return;
                     }
                 }
+                if((selectionVisual.getSelected() =="Bot") &&
+                    turnManager.getCurrentTurn == gameManager.getPlayer2()){
+                        botAI.playBotTurn();
+                        if(winManager.determineWinner()){
+                            boardManager.drawWinLine();
+                            popUp.show(turnManager.getCurrentTurn().name + "wins the game");
+                            return;
+                        }
+                        if(gameLogic.getRounds() ==9){
+                            popUp.show("It's a tie");
+                            return;
+                        }
+                    }
+                    
                 turnManager.findTurn();
                 turnManager.updateTurnVisual();
                 //console.log(gameLogic.getGamePad());
@@ -41,7 +59,7 @@ const popUp = (()=>{
     const winMsg = document.querySelector(".winnerTxt");
 
     const show = (message) =>{
-        winMsg.textContent = `${message} wins the game`;
+        winMsg.textContent = message;
         overlay.classList.add("visible");
     }
 
@@ -141,6 +159,98 @@ const gameManager = (()=>{
 
 })();
 
+const botAI = (()=>{
+    const isMovesLeft = (board) => board.includes(null); 
+    const evaluate = (board) =>{
+        const botIcon = gameManager.getPlayer2().getIcon();
+        const playerIcon = gameManager.Player1.getIcon();
+
+        const winCombos = winManager.getWinCombo();
+        for(let combo of winCombos){
+            const values = combo.map(i => board[i]);
+            if(values.every(v => v== botIcon)) return +10;
+            if(values.every(v => v== playerIcon)) return -10;
+        }
+        return 0;
+        
+    };
+
+    const minimax = (board, depth, isMax) =>{
+        const score = evaluate(board);
+        if(score == 10) return 10- depth;
+        if(score == -10) return -10 + depth;
+        if(!isMovesLeft(board)) return 0;
+
+        const botIcon = gameManager.getPlayer2().getIcon();
+        const playerIcon = gameManager.Player1.getIcon();
+
+        if(isMax){
+            let best = -1000;
+            for(let i=0; i<9; i++){
+                if(board[i] == null){
+                    board[i] = botIcon;
+                    best = Math.max(best, minimax(board, depth+1, false));
+                    board[i] = null;
+                }
+            }
+            return best;
+        }
+        else{
+            let best = 1000;
+            for(let i=0; i<9; i++){
+                if(board[i] == null){
+                    board[i] = playerIcon;
+                    best = Math.min(best, minimax(board, depth+1, true));
+                    board[i] = null;
+                }
+            }
+            return best;
+        }
+    };
+
+    const findBestMove = () =>{
+        const board = gameLogic.getGamePad().slice();
+        const botIcon = gameManager.getPlayer2().getIcon();
+
+        let bestVal = -1000;
+        let bestIndex = -1;
+
+        for(let i=0; i<9; i++){
+            if(board[i] ==null){
+                board[i] = botIcon;
+                let moveVal = minimax(board, 0, false);
+                board[i] = null;
+
+                if(moveVal > bestVal){
+                    bestVal = moveVal;
+                    bestIndex = i;
+                }
+            }
+        }
+        return bestIndex;
+    }
+
+    const playBotTurn = ()=>{
+        const bestIndex = findBestMove();
+        if(bestIndex == -1){
+            return;
+        }
+        const square = document.getElementById(bestIndex);
+        const iconHolder = square.querySelector(".icon");
+
+        iconHolder.src = turnManager.getCurrentTurn().getIcon();
+        gameLogic.updateGamePad(bestIndex, turnManager.getCurrentTurn().getIcon());
+        gameLogic.updateRounds();
+
+        turnManager.findTurn();
+        turnManager.updateTurnVisual();
+
+        
+    }
+    return{findBestMove, playBotTurn};
+})();
+
+
 
 
 const turnManager = (() =>{
@@ -227,7 +337,9 @@ const winManager = (()=>{
         return winner;
     }
 
-    return{determineWinner};
+    const getWinCombo = () => winningCombo;
+
+    return{determineWinner, getWinCombo};
 })();
 
 
