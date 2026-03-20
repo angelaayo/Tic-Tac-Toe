@@ -28,8 +28,11 @@ const startGame = (() =>{
                         return;
                     }
                 }
+                turnManager.findTurn();
+                turnManager.updateTurnVisual();
                 if((selectionVisual.getSelected() =="Bot") &&
-                    turnManager.getCurrentTurn == gameManager.getPlayer2()){
+                    turnManager.getCurrentTurn() == gameManager.getPlayer2()){
+                        console.log("We are in!!!");
                         botAI.playBotTurn();
                         if(winManager.determineWinner()){
                             boardManager.drawWinLine();
@@ -40,10 +43,10 @@ const startGame = (() =>{
                             popUp.show("It's a tie");
                             return;
                         }
+                        turnManager.findTurn();
+                        turnManager.updateTurnVisual();
                     }
                     
-                turnManager.findTurn();
-                turnManager.updateTurnVisual();
                 //console.log(gameLogic.getGamePad());
                 
             }, {once: true});
@@ -79,7 +82,8 @@ const selectionVisual = (()=>{
             const sibling = btn.nextElementSibling || btn.previousElementSibling;
             btn.classList.add("highlight");
             selected = btn.textContent;
-            gameManager.updatePlayer2();
+            console.log(selected);
+            gameManager.updatePlayer2(selected);
             sibling.classList.remove("highlight");
             secondIcon.src = gameManager.getPlayer2().getIcon();
         })
@@ -141,8 +145,8 @@ const gameManager = (()=>{
     Player1.chooseIcon("heart.png");
     human.chooseIcon("star.png");
 
-    const updatePlayer2 = ()=>{
-        if(selectionVisual.getSelected() =="Player"){
+    const updatePlayer2 = (selected)=>{
+        if(selected =="Player"){
             Player2 = human;
         }
         else{
@@ -241,9 +245,6 @@ const botAI = (()=>{
         iconHolder.src = turnManager.getCurrentTurn().getIcon();
         gameLogic.updateGamePad(bestIndex, turnManager.getCurrentTurn().getIcon());
         gameLogic.updateRounds();
-
-        turnManager.findTurn();
-        turnManager.updateTurnVisual();
 
         
     }
